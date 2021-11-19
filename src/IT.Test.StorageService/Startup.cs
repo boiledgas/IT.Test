@@ -7,6 +7,7 @@ using IT.Test.Bus;
 using IT.Test.Model;
 using IT.Test.Model.Configuration;
 using IT.Test.Shared;
+using IT.Test.StorageService.Filters;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,8 +32,10 @@ namespace IT.Test.StorageService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(builder => builder.AddSerilog());
-            services.AddControllers()
-                  .AddFluentValidation(v => v.DisableDataAnnotationsValidation = true);
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<ExceptionFilter>();
+            }).AddFluentValidation(v => v.DisableDataAnnotationsValidation = true);
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "My API" });
