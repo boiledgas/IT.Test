@@ -27,7 +27,7 @@ ENV IT_TEST_DB__HOST=host.docker.internal
 ENV IT_TEST_DB__PORT=5432
 ENV IT_TEST_DB__NAME=postgres
 ENV IT_TEST_DB__USERNAME=postgres
-ENV IT_TEST_DB__PASSWORD=strongpassword
+ENV IT_TEST_DB__PASSWORD=postgres
 COPY --from=publish /app /app
 WORKDIR /app
 ENTRYPOINT ["dotnet", "IT.Test.StorageService.dll"]
