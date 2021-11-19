@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /
+COPY ./src/*.sln ./src/
+COPY ./src/*/*.csproj ./src/
+RUN for file in $(ls /src/*.csproj); do mkdir -p ${file%.*}/ && mv $file ${file%.*}/; done
+WORKDIR /src
+RUN dotnet restore
+
+FROM build as publish
+WORKDIR /
+COPY . .
+RUN dotnet publish /src/IT.Test.Api/IT.Test.Api.csproj --no-restore -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS runtime
+EXPOSE 80
+
+ENV ASPNETCORE_URLS "http://+:80"
+
+ENV IT_TEST_RMQ__HOST=host.docker.internal
+ENV IT_TEST_RMQ__PORT=5672
+ENV IT_TEST_RMQ__VIRTUALHOST=/
+ENV IT_TEST_RMQ__USERNAME=guest
+ENV IT_TEST_RMQ__PASSWORD=guest
+
+COPY --from=publish /app /app
+WORKDIR /app
+ENTRYPOINT ["dotnet", "IT.Test.Api.dll"]

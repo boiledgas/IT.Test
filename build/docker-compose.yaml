@@ -1,0 +1,88 @@
+version: "2.1"
+networks:
+  network-it-test-api-service:
+    driver: bridge
+  network-it-test-storage-service:
+    driver: bridge
+services:
+  it-test-api-service:
+    container_name: it-test-api-service
+    restart: on-failure:5
+    networks: 
+        - network-it-test-api-service
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile.Api
+    environment:
+        - IT_TEST_RMQ__HOST=it-test-rabbitmq
+        - IT_TEST_RMQ__PORT=5672
+        - IT_TEST_RMQ__VIRTUALHOST=/test
+        - IT_TEST_RMQ__USERNAME=test_user
+        - IT_TEST_RMQ__PASSWORD=strongpassword
+    ports:
+      - 8081:80
+    depends_on:
+      - rabbitmq
+
+  it-test-storage-service:
+    container_name: it-test-storage-service
+    restart: on-failure:5
+    networks: 
+        - network-it-test-storage-service
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile.Storage
+    environment:
+        - IT_TEST_RMQ__HOST=it-test-rabbitmq
+        - IT_TEST_RMQ__PORT=5672
+        - IT_TEST_RMQ__VIRTUALHOST=/test
+        - IT_TEST_RMQ__USERNAME=test_user
+        - IT_TEST_RMQ__PASSWORD=strongpassword
+        - IT_TEST_DB__Host=it-test-postgres
+        - IT_TEST_DB__Port=5432
+        - IT_TEST_DB__Name=postgres
+        - IT_TEST_DB__User=postgres
+        - IT_TEST_DB__Password=postgres
+    ports:
+      - 8082:80
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  rabbitmq:
+    container_name: it-test-rabbitmq
+    networks: 
+        - network-it-test-api-service
+        - network-it-test-storage-service
+    image: rabbitmq:3.9.9-management
+    ports:
+        - 8083:15672 
+        - 5672:5672
+    volumes:
+        - ./../scripts/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+        - ./../scripts/definitions.json:/etc/rabbitmq/definitions.json:ro
+
+  postgres:
+    container_name: it-test-postgres
+    image: postgres:14.1
+    networks: 
+        - network-it-test-storage-service
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    container_name: it-test-pgadmin
+    image: dpage/pgadmin4:6.2
+    networks: 
+        - network-it-test-storage-service
+    environment:
+        - PGADMIN_DEFAULT_EMAIL=user@domain.com
+        - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    ports:
+      - 8084:80
+    depends_on:
+      - postgres

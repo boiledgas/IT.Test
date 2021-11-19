@@ -1,0 +1,1 @@
+docker-compose -f ./build/docker-compose.yaml down --rmi local -v --remove-orphans

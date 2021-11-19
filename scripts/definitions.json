@@ -1,0 +1,32 @@
+{
+    "rabbit_version": "3.6.6",
+    "users": [{
+            "name": "test_user",
+            "password": "strongpassword",
+            "tags": ""
+        }
+    ],
+    "vhosts": [{
+            "name": "/test"
+        }
+    ],
+    "permissions": [{
+            "user": "guest",
+            "vhost": "/test",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }, {
+            "user": "test_user",
+            "vhost": "/test",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "parameters": [],
+    "policies": [],
+    "queues":[],
+    "exchanges":[],
+    "bindings":[]
+}
