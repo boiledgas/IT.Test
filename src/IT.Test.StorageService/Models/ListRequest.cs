@@ -6,7 +6,7 @@ namespace IT.Test.StorageService.Models
 {
     public class ListRequest
     {
-        [DefaultValue("Информационные технологии")]
+        [DefaultValue("")]
         public string Organization { get; set; }
         [DefaultValue(0)]
         public int Offset { get; set; }
