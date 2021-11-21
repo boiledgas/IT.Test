@@ -27,7 +27,7 @@ namespace IT.Test.StorageService.Filters
                     context.Result = new BadRequestObjectResult(e.Errors);
                     break;
                 case UserNotFoundException u:
-                    context.Result = new NotFoundObjectResult(new { ErrorMessage = $"User not found {u.Email}"  });
+                    context.Result = new NotFoundObjectResult(new { ErrorMessage = $"User not found {u.Email}" });
                     break;
                 default:
                     context.ExceptionHandled = false;

@@ -1,4 +1,4 @@
-﻿// Тестовое задание https://github.com/boiledgas/IT.Test
+// Тестовое задание https://github.com/boiledgas/IT.Test
 
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;

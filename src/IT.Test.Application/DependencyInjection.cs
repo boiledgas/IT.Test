@@ -1,4 +1,4 @@
-// Тестовое задание https://github.com/boiledgas/IT.Test
+// РўРµСЃС‚РѕРІРѕРµ Р·Р°РґР°РЅРёРµ https://github.com/boiledgas/IT.Test
 
 using System.Reflection;
 using FluentValidation;
