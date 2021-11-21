@@ -6,7 +6,6 @@ using IT.Test.Model.Configuration;
 using IT.Test.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace IT.Test.Model
 {
@@ -14,7 +13,7 @@ namespace IT.Test.Model
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services, PersistenceConfiguration config)
         {
-            PersistenceConfigurationValidator validator = new PersistenceConfigurationValidator();
+            var validator = new PersistenceConfigurationValidator();
             ValidationResult validationResult = validator.Validate(config);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);

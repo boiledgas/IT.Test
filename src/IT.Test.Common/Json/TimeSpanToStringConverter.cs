@@ -1,10 +1,12 @@
+// Тестовое задание https://github.com/boiledgas/IT.Test
+
 namespace System.Text.Json.Serialization
 {
     public class TimeSpanToStringConverter : JsonConverter<TimeSpan>
     {
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = reader.GetString();
+            string value = reader.GetString();
             return TimeSpan.Parse(value);
         }
 
