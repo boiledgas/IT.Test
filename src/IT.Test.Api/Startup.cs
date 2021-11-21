@@ -1,8 +1,10 @@
 // Тестовое задание https://github.com/boiledgas/IT.Test
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
+using IT.Test.Api.HealthCheck;
 using IT.Test.Bus;
-using IT.Test.Shared;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,11 +31,20 @@ namespace IT.Test.Api
         {
             services.AddLogging(log => log.AddSerilog());
             services.AddControllers()
-                .AddFluentValidation(v => v.DisableDataAnnotationsValidation = true);
+                .AddFluentValidation(v => v.DisableDataAnnotationsValidation = true)
+                .AddJsonOptions(json =>
+                  {
+                      JsonSerializerOptions options = json.JsonSerializerOptions;
+                      options.WriteIndented = true;
+                      options.Converters.Add(new JsonStringEnumConverter());
+                      options.Converters.Add(new TimeSpanToStringConverter());
+                      options.Converters.Add(new ExceptionToStringConverter());
+                  });
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "My API" });
             });
+            services.AddHealthChecks();
 
             services.AddMassTransit(x =>
             {
@@ -76,6 +87,8 @@ namespace IT.Test.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapHealthChecks();
             });
         }
     }

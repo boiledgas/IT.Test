@@ -22,7 +22,10 @@ services:
     ports:
       - 8081:80
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   it-test-storage-service:
     container_name: it-test-storage-service
@@ -46,8 +49,10 @@ services:
     ports:
       - 8082:80
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   rabbitmq:
     container_name: it-test-rabbitmq
@@ -61,6 +66,11 @@ services:
     volumes:
         - ./../scripts/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
         - ./../scripts/definitions.json:/etc/rabbitmq/definitions.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
     container_name: it-test-postgres
@@ -73,6 +83,11 @@ services:
         - POSTGRES_DB=postgres
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     container_name: it-test-pgadmin
@@ -85,4 +100,5 @@ services:
     ports:
       - 8084:80
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy

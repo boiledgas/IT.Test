@@ -1,34 +1,33 @@
 // Тестовое задание https://github.com/boiledgas/IT.Test
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using FluentValidation;
+using FluentValidation.Results;
 using IT.Test.Model.Configuration;
 using IT.Test.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 namespace IT.Test.Model
 {
     public static class DependencyInjection
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services, PersistenceConfiguration config)
         {
-            PersistenceConfigurationValidator validator = Activator.CreateInstance<PersistenceConfigurationValidator>();
-
-            FluentValidation.Results.ValidationResult validationResult = validator.Validate(config);
+            PersistenceConfigurationValidator validator = new PersistenceConfigurationValidator();
+            ValidationResult validationResult = validator.Validate(config);
             if (!validationResult.IsValid)
-            {
-                string validationFields = string.Join(", ", validationResult.Errors.Select(e => e.PropertyName));
-                throw new ValidationException($"Missing configuration fields: {validationFields}");
-            }
+                throw new ValidationException(validationResult.Errors);
 
             services
                 .AddDbContext<PersistenceContext>(options =>
                 {
                     options.UseNpgsql(config.ConnectionString);
-                })
+                });
+
+            services
                 .AddHealthChecks()
-                .AddNpgSql(config.ConnectionString, name: "db");
+                .AddNpgSql(config.ConnectionString, name: "postgres");
 
             return services;
         }

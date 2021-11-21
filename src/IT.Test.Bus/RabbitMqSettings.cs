@@ -1,6 +1,9 @@
-// Тестовое задание https://github.com/boiledgas/IT.Test
+// РўРµСЃС‚РѕРІРѕРµ Р·Р°РґР°РЅРёРµ https://github.com/boiledgas/IT.Test
 
-namespace IT.Test.Shared
+using System;
+using System.Web;
+
+namespace IT.Test.Bus
 {
     public class RabbitMqSettings
     {
@@ -10,5 +13,7 @@ namespace IT.Test.Shared
         public string ConnectionName { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+
+        public Uri Uri => new Uri($"amqp://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{Host}:{Port}/{HttpUtility.UrlEncode(VirtualHost)}");
     }
 }
