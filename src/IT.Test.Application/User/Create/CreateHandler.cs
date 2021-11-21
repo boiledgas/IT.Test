@@ -1,10 +1,13 @@
-// Тестовое задание https://github.com/boiledgas/IT.Test
+// РўРµСЃС‚РѕРІРѕРµ Р·Р°РґР°РЅРёРµ https://github.com/boiledgas/IT.Test
 
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using IT.Test.Application.Exceptions;
 using IT.Test.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace IT.Test.Application.User.Create
 {
@@ -20,6 +23,10 @@ namespace IT.Test.Application.User.Create
 
         public async Task<CreateResponse> Handle(CreateCommand request, CancellationToken cancellationToken)
         {
+            bool exists = await _context.Users.Where(u => u.Email == request.Email).AnyAsync();
+            if (exists)
+                throw new UserExistException(request.Email);
+
             Persistence.Entities.User user = _mapper.Map<Persistence.Entities.User>(request);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
